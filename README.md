@@ -7,7 +7,7 @@ How to use:
     python3 -m venv venv
 
 Activate it:
-    source venv/bin/activate -> dla Windows source venv/Scripts/activate
+    source venv/bin/activate -> for Windows source venv/Scripts/activate
 
 2. install requirements pip install -r requirements.txt
 
