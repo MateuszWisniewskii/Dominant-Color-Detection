@@ -1,3 +1,6 @@
 /venv
 .DS_Store
+<<<<<<< HEAD
 test.txt
+=======
+>>>>>>> 711382a34fff24cedae201071a22b1ff67b6de11
