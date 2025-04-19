@@ -3,7 +3,7 @@ Biologically inspired artificial intelligence project, a program that prints the
 
 How to use:
 
-1.Create virtual environment:
+1. Create virtual environment:
     python3 -m venv venv
 
 Activate it:

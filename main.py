@@ -1,6 +1,8 @@
 import numpy as np
 from PIL import Image
+from imageLoader import ImageLoader
 
 
-print("hello")
+loader = ImageLoader()
 
+loader.open("Data/")
