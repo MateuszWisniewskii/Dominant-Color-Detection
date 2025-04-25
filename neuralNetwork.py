@@ -20,19 +20,29 @@ class NeuralNetwork:
     def relu(x):
         return np.max(0,x)
 
+    def relu_derivative(x):
+        return (x > 0).astype(float)
+
+    def sigmoid(x):
+        return 1 / (1 + math.exp(-x))
+
+    def sigmoid_derivative(self,x):
+        return self.sigmoid(x) * (1-self.sigmoid(x))
+
     #Converting inputs to Linear Regresion y = ax + b -> Z = X @ W + B 
     def forward(self, X): 
         self.Z1 = X @ self.weights1 + self.bias1
         self.A1 = self.relu(self.Z1)
 
-        self.Z2 = X @ self.weights2 + self.bias2
+        self.Z2 = self.A1 @ self.weights2 + self.bias2
         self.A2 = self.relu(self.Z2)
 
-        self.Z3 = X @ self.weights3 + self.bias3 
-        self.A3 = self.relu(self.Z3)
+        self.Z3 = self.A2 @ self.weights3 + self.bias3 
+        self.A3 = self.sigmoid(self.Z3)  
 
-    def sigmoid(x):
-        return 1 / (1 + math.exp(-x))
+        return self.A3 
+
+
 
 
 
