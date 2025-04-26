@@ -83,3 +83,18 @@ class NeuralNetwork:
 
         self.weights3 -= self.learningRate * dW3
         self.bias3 -= self.learningRate * db3
+
+
+
+    # X - input
+    # Y - target
+    # epochs - number of iterationss
+    def train(self, X, Y, epochs):
+        losses = []
+        for epoch in range(epochs):
+            output = self.forward(X)
+            loss = np.mean((output - Y)**2)
+            losses.append(loss)
+            self.backward(X, Y)
+
+        return losses
