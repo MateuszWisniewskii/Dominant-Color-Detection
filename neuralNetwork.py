@@ -18,14 +18,14 @@ class NeuralNetwork:
 
     #Rectified Linear Unit Activation function f(x)=max(0,x)
     def relu(self, x):
-        return np.max(0,x)
+        return np.maximum(0,x)
 
     def relu_derivative(self, x):
         return (x > 0).astype(float)
 
     #Sigmoid activation function
     def sigmoid(self, x):
-        return 1 / (1 + math.exp(-x))
+        return 1 / (1 + np.exp(-x))
 
     def sigmoid_derivative(self, x):
         return self.sigmoid(x) * (1-self.sigmoid(x))
@@ -45,11 +45,41 @@ class NeuralNetwork:
         return self.A3 
 
     def backward(self, X, Y):
+
+        #for more than one input
+        batch = X.shape[0]
+
         dA3 = self.A3 - Y
         dZ3 = dA3 * self.sigmoid_derivative(self.Z3)
 
-        #TO DO: complete this back propagation function, go back to each layer and calculate error 
+        dA2 = dZ3 @ self.weights3.T
+        dZ2 = dA2 * self.relu_derivative(self.Z2)
+
+        dA1 = dZ2 @ self.weights2.T
+        dZ1 = dA1 * self.relu_derivative(self.Z1)
+
+        #Gradient for weights and biases
+        dW3 = self.A2.T @ dZ2 / batch
+        db3 = np.sum(dZ3, axis=0, keepdims=True) / batch
+
+        dW2 = self.A1.T @ dZ2 / batch
+        db2 = np.sum(dZ2, axis=0, keepdims=True) / batch
+
+        dW1 = X.T @ dZ1 / batch
+        db1 = np.sum(dZ1, axis=0, keepdims=True) / batch
+
+        self.update_parameters(dW1, db1, dW2, db2, dW3, db3)
 
 
-    def update_parameters(self, weight_error, bias_error):
-        return
+
+
+    #Method for updating parameters based on calculated gradient
+    def update_parameters(self, dW1, db1, dW2, db2, dW3, db3):
+        self.weights1 -= self.learningRate * dW1
+        self.bias1 -= self.learningRate * db1
+
+        self.weights2 -= self.learningRate * dW2
+        self.bias2 -= self.learningRate * db2
+
+        self.weights3 -= self.learningRate * dW3
+        self.bias3 -= self.learningRate * db3
