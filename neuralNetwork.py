@@ -6,14 +6,17 @@ class NeuralNetwork:
     def __init__(self, learningRate):
         self.learningRate = learningRate
 
-        self.weights1 = np.random.randn(12288, 128) #12288 inputs and 128 neurons
-        self.bias1 = np.random.randn(1, 128)
+        #He weights initialization for ReLU
+        self.weights1 = np.random.randn(12288, 128) * np.sqrt(2. / 12288)
+        self.bias1 = np.zeros((1, 128))
 
-        self.weights2 = np.random.randn(128, 64)
-        self.bias2 = np.random.randn(1, 64)
+        #He weights initialization for ReLU
+        self.weights2 = np.random.randn(128, 64) * np.sqrt(2. / 128)
+        self.bias2 = np.zeros((1, 64))
 
-        self.weights3 = np.random.randn(64, 3)
-        self.bias3 = np.random.randn(1, 3)
+        #Xavier initialization for Sigmoid
+        self.weights3 = np.random.randn(64, 3) * np.sqrt(1. / 64)
+        self.bias3 = np.zeros((1, 3))
 
 
     #Rectified Linear Unit Activation function f(x)=max(0,x)
@@ -59,7 +62,7 @@ class NeuralNetwork:
         dZ1 = dA1 * self.relu_derivative(self.Z1)
 
         #Gradient for weights and biases
-        dW3 = self.A2.T @ dZ2 / batch
+        dW3 = self.A2.T @ dZ3 / batch
         db3 = np.sum(dZ3, axis=0, keepdims=True) / batch
 
         dW2 = self.A1.T @ dZ2 / batch
