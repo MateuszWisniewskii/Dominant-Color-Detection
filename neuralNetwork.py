@@ -1,5 +1,4 @@
 import numpy as np
-import math
 
 
 class NeuralNetwork:
@@ -7,16 +6,31 @@ class NeuralNetwork:
         self.learningRate = learningRate
 
         #He weights initialization for ReLU
-        self.weights1 = np.random.randn(12288, 128) * np.sqrt(2. / 12288)
-        self.bias1 = np.zeros((1, 128))
+        self.weights1 = np.random.randn(12288, 32) * np.sqrt(2. / 12288)
+        self.bias1 = np.zeros((1, 32))
 
         #He weights initialization for ReLU
-        self.weights2 = np.random.randn(128, 64) * np.sqrt(2. / 128)
-        self.bias2 = np.zeros((1, 64))
+        self.weights2 = np.random.randn(32, 16) * np.sqrt(2. / 32)
+        self.bias2 = np.zeros((1, 16))
 
         #Xavier initialization for Sigmoid
-        self.weights3 = np.random.randn(64, 3) * np.sqrt(1. / 64)
+        self.weights3 = np.random.randn(16, 3) * np.sqrt(1. / 16)
         self.bias3 = np.zeros((1, 3))
+
+
+        #More neurons = better results but for this simple task like finding dominant color there is no need for more neurons
+
+        # #He weights initialization for ReLU
+        # self.weights1 = np.random.randn(12288, 64) * np.sqrt(2. / 12288)
+        # self.bias1 = np.zeros((1, 64))
+
+        # #He weights initialization for ReLU
+        # self.weights2 = np.random.randn(64, 32) * np.sqrt(2. / 64)
+        # self.bias2 = np.zeros((1, 32))
+
+        # #Xavier initialization for Sigmoid
+        # self.weights3 = np.random.randn(32, 3) * np.sqrt(1. / 32)
+        # self.bias3 = np.zeros((1, 3))
 
 
     #Rectified Linear Unit Activation function f(x)=max(0,x)
