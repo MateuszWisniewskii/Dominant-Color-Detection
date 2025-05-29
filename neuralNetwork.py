@@ -3,6 +3,9 @@ import numpy as np
 
 class NeuralNetwork:
     def __init__(self, learningRate):
+
+        self.path="modelWeights.npz"
+
         self.learningRate = learningRate
 
         #He weights initialization for ReLU
@@ -115,3 +118,24 @@ class NeuralNetwork:
             self.backward(X, Y)
 
         return losses
+    
+
+    def saveModel(self):
+        np.savez(self.path, weights1=self.weights1,
+             bias1=self.bias1,
+             weights2=self.weights2,
+             bias2=self.bias2,
+             weights3=self.weights3,
+             bias3=self.bias3)
+        return{f"Model saved to {self.path}"}
+    
+
+    def loadModel(self):
+        data = np.load(self.path)
+        self.weights1 = data['weights1']
+        self.bias1 = data['bias1']
+        self.weights2 = data['weights2']
+        self.bias2 = data['bias2']
+        self.weights3 = data['weights3']
+        self.bias3 = data['bias3']
+        print(f"Model loaded from {self.path}")
