@@ -7,15 +7,20 @@ import matplotlib.pyplot as plt
 import argparse
 
 
+
+#Function for predicting
 def Predict(image):
+    #creating neural network object
     net = nn.NeuralNetwork(learningRate=0.01)
     imageLoader = il.ImageLoader()
+
+    #loading model(weights and biases) from file
     net.loadModel()
     normalizedInput = imageLoader(image)
     prediction = net.forward(normalizedInput)
     print("Prediction: ", prediction)
 
-
+#Function for trainning
 def Train(pathToDataset):
     net = nn.NeuralNetwork(learningRate=0.01)
     imageLoader = il.ImageLoader()
@@ -30,6 +35,9 @@ def Train(pathToDataset):
         epochs = 10
         losses = net.train(X, Y, epochs)
         lossesArray.append(losses)
+
+    #saving model(weights and biases) to file
+    net.saveModel()
 
     for i, losses in enumerate(lossesArray):
         plt.plot(range(len(losses)), losses, label=f'Image {i+1}')

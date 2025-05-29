@@ -66,28 +66,32 @@ class NeuralNetwork:
 
     def backward(self, X, Y):
 
-        #for more than one input
+        # Batch size (number of samples)
         batch = X.shape[0]
 
+        # Output layer error
         dA3 = self.A3 - Y
-        dZ3 = dA3 * self.sigmoid_derivative(self.Z3)
+        dZ3 = dA3 * self.sigmoid_derivative(self.Z3)  # Derivative through sigmoid
 
+        # Hidden layer 2 error
         dA2 = dZ3 @ self.weights3.T
-        dZ2 = dA2 * self.relu_derivative(self.Z2)
+        dZ2 = dA2 * self.relu_derivative(self.Z2)     # Derivative through ReLU
 
+        # Hidden layer 1 error
         dA1 = dZ2 @ self.weights2.T
-        dZ1 = dA1 * self.relu_derivative(self.Z1)
+        dZ1 = dA1 * self.relu_derivative(self.Z1)     # Derivative through ReLU
 
-        #Gradient for weights and biases
-        dW3 = self.A2.T @ dZ3 / batch
-        db3 = np.sum(dZ3, axis=0, keepdims=True) / batch
+        # Gradients for weights and biases
+        dW3 = self.A2.T @ dZ3 / batch                 # Gradient of weights between layer 2 and output
+        db3 = np.sum(dZ3, axis=0, keepdims=True) / batch  # Gradient of biases for output layer
 
-        dW2 = self.A1.T @ dZ2 / batch
-        db2 = np.sum(dZ2, axis=0, keepdims=True) / batch
+        dW2 = self.A1.T @ dZ2 / batch                 # Gradient of weights between layer 1 and 2
+        db2 = np.sum(dZ2, axis=0, keepdims=True) / batch  # Gradient of biases for layer 2
 
-        dW1 = X.T @ dZ1 / batch
-        db1 = np.sum(dZ1, axis=0, keepdims=True) / batch
+        dW1 = X.T @ dZ1 / batch                       # Gradient of weights between input and layer 1
+        db1 = np.sum(dZ1, axis=0, keepdims=True) / batch  # Gradient of biases for layer 1
 
+        # Update weights and biases
         self.update_parameters(dW1, db1, dW2, db2, dW3, db3)
 
 
