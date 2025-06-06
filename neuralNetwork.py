@@ -1,145 +1,43 @@
-import numpy as np
+import torch.nn as nn
+import torch.nn.functional as F
 
+class ConvolutionalNeuralNetwork(nn.Module):
+    def __init__(self):
+        super(ConvolutionalNeuralNetwork, self).__init__()
 
-class NeuralNetwork:
-    def __init__(self, learningRate):
+        # First convolutional layer: input has 3 LAB channels (L, a, b), outputs 16 feature maps
+        self.conv1 = nn.Conv2d(3, 16, kernel_size=3, padding=1)
 
-        self.path="modelWeights.npz"
+        # Second convolutional layer: input 16 feature maps, outputs 32
+        self.conv2 = nn.Conv2d(16, 32, kernel_size=3, padding=1)
 
-        self.learningRate = learningRate
+        # First fully connected layer: flatten output from conv2 and reduce to 64 features
+        # Input size assumes input LAB image size of 64x64, after 2x max pooling: 64 -> 32 -> 16
+        self.fc1 = nn.Linear(32 * 16 * 16, 64)
 
-        #He weights initialization for ReLU
-        self.weights1 = np.random.randn(12288, 32) * np.sqrt(2. / 12288)
-        self.bias1 = np.zeros((1, 32))
+        # Output layer: 3 output neurons, e.g. for predicting 3 dominant color components
+        self.fc2 = nn.Linear(64, 3)
 
-        #He weights initialization for ReLU
-        self.weights2 = np.random.randn(32, 16) * np.sqrt(2. / 32)
-        self.bias2 = np.zeros((1, 16))
+    def forward(self, x):
+        # Apply first convolution + ReLU activation (LAB input)
+        x = F.relu(self.conv1(x))
 
-        #Xavier initialization for Sigmoid
-        self.weights3 = np.random.randn(16, 3) * np.sqrt(1. / 16)
-        self.bias3 = np.zeros((1, 3))
+        # Downsample with max pooling (reduce spatial size by 2)
+        x = F.max_pool2d(x, 2)
 
+        # Apply second convolution + ReLU
+        x = F.relu(self.conv2(x))
 
-        #More neurons = better results but for this simple task like finding dominant color there is no need for more neurons
+        # Second max pooling
+        x = F.max_pool2d(x, 2)
 
-        # #He weights initialization for ReLU
-        # self.weights1 = np.random.randn(12288, 64) * np.sqrt(2. / 12288)
-        # self.bias1 = np.zeros((1, 64))
+        # Flatten the tensor for the fully connected layer
+        x = x.view(x.size(0), -1)
 
-        # #He weights initialization for ReLU
-        # self.weights2 = np.random.randn(64, 32) * np.sqrt(2. / 64)
-        # self.bias2 = np.zeros((1, 32))
+        # Fully connected layer + ReLU
+        x = F.relu(self.fc1(x))
 
-        # #Xavier initialization for Sigmoid
-        # self.weights3 = np.random.randn(32, 3) * np.sqrt(1. / 32)
-        # self.bias3 = np.zeros((1, 3))
+        # Output layer + Sigmoid activation for normalized output (0–1)
+        x = F.sigmoid(self.fc2(x))  # You can replace this with torch.sigmoid(x) if using PyTorch > 1.7
 
-
-    #Rectified Linear Unit Activation function f(x)=max(0,x)
-    def relu(self, x):
-        return np.maximum(0,x)
-
-    def relu_derivative(self, x):
-        return (x > 0).astype(float)
-
-    #Sigmoid activation function
-    def sigmoid(self, x):
-        return 1 / (1 + np.exp(-x))
-
-    def sigmoid_derivative(self, x):
-        return self.sigmoid(x) * (1-self.sigmoid(x))
-
-    #Converting inputs to Linear Regresion y = ax + b -> Z = X * W + B
-    #Activation function A = RELU(Z)
-    def forward(self, X): 
-        self.Z1 = X @ self.weights1 + self.bias1
-        self.A1 = self.relu(self.Z1)
-
-        self.Z2 = self.A1 @ self.weights2 + self.bias2
-        self.A2 = self.relu(self.Z2)
-
-        self.Z3 = self.A2 @ self.weights3 + self.bias3 
-        self.A3 = self.sigmoid(self.Z3)  
-
-        return self.A3 
-
-    def backward(self, X, Y):
-
-        # Batch size (number of samples)
-        batch = X.shape[0]
-
-        # Output layer error
-        dA3 = self.A3 - Y
-        dZ3 = dA3 * self.sigmoid_derivative(self.Z3)  # Derivative through sigmoid
-
-        # Hidden layer 2 error
-        dA2 = dZ3 @ self.weights3.T
-        dZ2 = dA2 * self.relu_derivative(self.Z2)     # Derivative through ReLU
-
-        # Hidden layer 1 error
-        dA1 = dZ2 @ self.weights2.T
-        dZ1 = dA1 * self.relu_derivative(self.Z1)     # Derivative through ReLU
-
-        # Gradients for weights and biases
-        dW3 = self.A2.T @ dZ3 / batch                 # Gradient of weights between layer 2 and output
-        db3 = np.sum(dZ3, axis=0, keepdims=True) / batch  # Gradient of biases for output layer
-
-        dW2 = self.A1.T @ dZ2 / batch                 # Gradient of weights between layer 1 and 2
-        db2 = np.sum(dZ2, axis=0, keepdims=True) / batch  # Gradient of biases for layer 2
-
-        dW1 = X.T @ dZ1 / batch                       # Gradient of weights between input and layer 1
-        db1 = np.sum(dZ1, axis=0, keepdims=True) / batch  # Gradient of biases for layer 1
-
-        # Update weights and biases
-        self.update_parameters(dW1, db1, dW2, db2, dW3, db3)
-
-
-
-
-    #Method for updating parameters based on calculated gradient
-    def update_parameters(self, dW1, db1, dW2, db2, dW3, db3):
-        self.weights1 -= self.learningRate * dW1
-        self.bias1 -= self.learningRate * db1
-
-        self.weights2 -= self.learningRate * dW2
-        self.bias2 -= self.learningRate * db2
-
-        self.weights3 -= self.learningRate * dW3
-        self.bias3 -= self.learningRate * db3
-
-
-
-    # X - input
-    # Y - target
-    # epochs - number of iterationss
-    def train(self, X, Y, epochs):
-        losses = []
-        for epoch in range(epochs):
-            output = self.forward(X)
-            loss = np.mean((output - Y)**2)
-            losses.append(loss)
-            self.backward(X, Y)
-
-        return losses
-    
-
-    def saveModel(self):
-        np.savez(self.path, weights1=self.weights1,
-             bias1=self.bias1,
-             weights2=self.weights2,
-             bias2=self.bias2,
-             weights3=self.weights3,
-             bias3=self.bias3)
-        return{f"Model saved to {self.path}"}
-    
-
-    def loadModel(self):
-        data = np.load(self.path)
-        self.weights1 = data['weights1']
-        self.bias1 = data['bias1']
-        self.weights2 = data['weights2']
-        self.bias2 = data['bias2']
-        self.weights3 = data['weights3']
-        self.bias3 = data['bias3']
-        print(f"Model loaded from {self.path}")
+        return x
