@@ -8,6 +8,8 @@ import matplotlib.colors as mcolors
 from pathlib import Path
 import csv
 
+
+#function for normalizing Lab to 0..1 values 
 def normalizeLabTensor(lab_tensor):
 
     lab_tensor = lab_tensor.copy()
@@ -62,11 +64,11 @@ def loadAndConvertData(file_name):
     return data
 
 
-def createDataCSV(csv_file_name):
-    data = loadAndConvertData("/Users/patrykpandel/Desktop/BIAI/Data/GKew_2025_03_20-11_03_35.txt")
+def createDataCSV(csv_file_name, raw_data_file, images_folder):
+    data = loadAndConvertData(raw_data_file)
     images = []
     rows = []
-    folder = Path("/Users/patrykpandel/Desktop/BIAI/Data/PhotosColorPicker")
+    folder = Path(images_folder)
 
     
     for image_name, Lab_label in data:
@@ -86,7 +88,7 @@ def createDataCSV(csv_file_name):
         writer.writerow(header)
         writer.writerows(rows)
             
-    
+
 
     
         
