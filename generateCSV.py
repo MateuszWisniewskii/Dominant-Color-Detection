@@ -1,5 +1,5 @@
 import argparse
-from prepareData import createDataCSV
+from generateDataCSV import createDataCSV
 from pathlib import Path
 
 

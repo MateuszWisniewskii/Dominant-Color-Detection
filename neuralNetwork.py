@@ -6,17 +6,18 @@ class ConvolutionalNeuralNetwork(nn.Module):
         super(ConvolutionalNeuralNetwork, self).__init__()
 
         #first convolutional layer: input has 3 LAB channels (L, a, b), outputs 16 feature maps
-        self.conv1 = nn.Conv2d(3, 16, kernel_size=3, padding=1)
+        self.conv1 = nn.Conv2d(3, 32, kernel_size=3, padding=1)
 
         #second convolutional layer: input 16 feature maps, outputs 32
-        self.conv2 = nn.Conv2d(16, 32, kernel_size=3, padding=1)
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
 
-        #first fully connected layer: flatten output from conv2 and reduce to 64 features
-        #input size assumes input LAB image size of 64x64, after 2x max pooling: 64 -> 32 -> 16
-        self.fc1 = nn.Linear(32 * 16 * 16, 64)
+        self.gap = nn.AdaptiveAvgPool2d((1,1))
+
+        #fully connected layer (32 channels from conv2 -> 64 hidden units
+        self.fc1 = nn.Linear(64, 64)
 
         #output layer: 3 output neurons, e.g. for predicting 3 dominant color components
-        self.fc2 = nn.Linear(64, 3)
+        self.fc2 = nn.Linear(64, 15)
 
     def forward(self, x):
         #apply first convolution + ReLU activation (LAB input)
@@ -30,6 +31,9 @@ class ConvolutionalNeuralNetwork(nn.Module):
 
         #second max pooling
         x = F.max_pool2d(x, 2)
+
+        #global average pooling across spatial dimensions -> (B, 32, 1, 1)
+        x = self.gap(x)
 
         #flatten the tensor for the fully connected layer
         x = x.view(x.size(0), -1)
