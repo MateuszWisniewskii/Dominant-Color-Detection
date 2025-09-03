@@ -8,7 +8,7 @@ LAB_L_MAX = 100.0
 LAB_AB_SHIFT = 128
 LAB_AB_MAX = 255.0
 
-def normalizeLabTensor(lab_tensor):
+def normalize_lab_tensor(lab_tensor):
     lab_tensor = lab_tensor.copy()
 
     #change to 2 dimension tensor if was 1 dimension
