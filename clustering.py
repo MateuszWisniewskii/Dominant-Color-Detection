@@ -2,7 +2,7 @@ from PIL import Image
 import numpy as np
 from skimage.color import rgb2lab, lab2rgb
 from sklearn.cluster import KMeans
-from color_conversion import normalizeLabTensor
+from normalize_lab_tensor import normalizeLabTensor
 
 # Wczytanie obrazu
 image = Image.open("./Data/PhotosColorPicker/000000010432.jpg").convert("RGB")
