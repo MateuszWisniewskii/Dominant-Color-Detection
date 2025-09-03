@@ -22,4 +22,5 @@ if __name__ == "__main__":
     else:
         print(f"An error occured while creating {args.output_csv}")
 
+# Przykładowe wywołanie skryptu tworzącego plik .csv
 # generate_csv_file.py --output_csv my_csv.csv --txt_file ./Data/GKew_2025_03_20-11_03_35.txt --images_folder ./Data/PhotosColorPicker
